@@ -14,7 +14,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 #define PACOTE_BUFFER_SIZE 512
-#define MAX_NOME_ARQUIVO 200
+#define MAX_NOME_ARQUIVO 100
 #define TRUE 1
 #define FALSE 0
 
@@ -103,9 +103,7 @@ void leecher(int socks, struct sockaddr_in *servaddr)
         error("Erro ao receber pacote\n");
     }
 
-    printf("Servidor encontrou cliente seeder");
-    printf("ip: %s\n", inet_ntoa(semeadoraddr.sin_addr));
-
+    printf("Servidor encontrou cliente seeder - IP: %s\n", inet_ntoa(semeadoraddr.sin_addr));
 
     printf("Digite o nome do arquivo desejado: ");
     scanf(" %s", nome_arquivo);

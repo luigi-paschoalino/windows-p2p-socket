@@ -38,27 +38,27 @@ int main()
     WSADATA wsaData;
 
     int socks;
-    int opcao = 0; //escolha do tipo de cliente que se conectará, 1=semear; 2=baixar
+    int opcao = 0; // Escolha do tipo de cliente que se conectará, 1 - Seeder ; 2 - Leecher
 
     struct sockaddr_in servaddr;
     struct sockaddr_in clienteaddr;
 
-    Cliente cliente_semear;
-    Cliente cliente_baixar;
+    Cliente cliente_seeder;
+    Cliente cliente_leecher;
 
-    cliente_baixar.online = FALSE;
-    cliente_semear.online = FALSE;
+    cliente_leecher.online = FALSE;
+    cliente_seeder.online = FALSE;
 
-    memset(&(cliente_baixar.addr), 0, sizeof(cliente_baixar.addr));
-    memset(&(cliente_semear.addr), 0, sizeof(cliente_semear.addr));
+    memset(&(cliente_leecher.addr), 0, sizeof(cliente_leecher.addr));
+    memset(&(cliente_seeder.addr), 0, sizeof(cliente_seeder.addr));
     memset(&(clienteaddr), 0, sizeof(clienteaddr));
 
     socklen_t l = sizeof(struct sockaddr_in);
 
-    // Iniciando a dll de sockets windows
+    // Iniciando a DLL de sockets windows
     WSAStartup(MAKEWORD(2, 1), &wsaData);
 
-    //criando socket do servidor
+    // Criando socket do servidor
     socks = socket(AF_INET, SOCK_DGRAM, 0);
     if (socks < 0)
     {
@@ -71,60 +71,59 @@ int main()
     servaddr.sin_addr.s_addr = INADDR_ANY;
     servaddr.sin_port = htons(7802);
 
-    //bindando com a porta
+    // Bindando com a porta
     if (bind(socks, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0)
         printf("Erro ao bindar\n");
 
     printf("Servidor inicializado com sucesso!\n\n");
     printf("Esperando clientes se conectarem...\n\n");
 
-    //o servidor permite apenas 2 clientes executando ao mesmo tempo e pressupõe que quem vai semear já possui o arquivo
-    while (cliente_baixar.online == FALSE || cliente_semear.online == FALSE)
+    // O servidor permite apenas 2 clientes simultaneos
+
+    while (cliente_leecher.online == FALSE || cliente_seeder.online == FALSE)
     {
 
-        //recebe pedido de conexão do cliente
+        // Eecebe pedido de conexão do cliente
         if (recvfrom(socks, &opcao, sizeof(opcao), 0, (struct sockaddr *)&clienteaddr, &l) < 0)
         {
             error("Erro ao receber conexão do cliente");
         }
 
-        // verifica qual tipo de cliente conectou
+        // Verifica qual tipo de cliente conectou
 
-        if (opcao == 2 && cliente_baixar.online == FALSE)
+        if (opcao == 2 && cliente_leecher.online == FALSE) // Conectando cliente leecher
         {
-            cliente_baixar.addr = clienteaddr;
-            cliente_baixar.online = TRUE;
+            cliente_leecher.addr = clienteaddr;
+            cliente_leecher.online = TRUE;
             memset(&(clienteaddr), 0, sizeof(clienteaddr));
-            printf("Cliente que deseja baixar conectado\n\n");
+            printf("Cliente que deseja leecher conectado\n\n");
         }
 
-        else if (opcao == 1 && cliente_semear.online == FALSE)
+        else if (opcao == 1 && cliente_seeder.online == FALSE) // Conectando cliente leecher
         {
-            cliente_semear.addr = clienteaddr;
-            cliente_semear.online = TRUE;
+            cliente_seeder.addr = clienteaddr;
+            cliente_seeder.online = TRUE;
             memset(&(clienteaddr), 0, sizeof(clienteaddr));
             printf("Cliente seeder conectado\n");
         }
-        else if (opcao == 2)
-        {
+        else if (opcao == 2) // Caso já exista um cliente leecher conectado, nada acontece
             printf("Ja existe um cliente leecher conectado\n");
-        }
-        else if (opcao == 1)
-        {
-            printf("já existe um cliente seeder conectado\n");
-        }
+        else if (opcao == 1) // Caso já exista um cliente seeder conectado, nada acontece
+            printf("Ja existe um cliente seeder conectado\n");
 
-        if (cliente_baixar.online == TRUE && cliente_semear.online == TRUE)
+        // Servidor so ira conectar clientes em papeis diferentes, nao podendo ter dois clientes seeder e leecher ao mesmo tempo
+
+        if (cliente_leecher.online == TRUE && cliente_seeder.online == TRUE)
         {
-            // envia informacoes do seeder para leecher
-            if (sendto(socks, &(cliente_semear.addr), sizeof(cliente_semear.addr), 0, (struct sockaddr *)&(cliente_baixar.addr), sizeof(cliente_baixar.addr)) < 0)
+            // Envia informacoes do seeder para leecher
+            if (sendto(socks, &(cliente_seeder.addr), sizeof(cliente_seeder.addr), 0, (struct sockaddr *)&(cliente_leecher.addr), sizeof(cliente_leecher.addr)) < 0)
             {
                 error("Erro ao enviar informações do seeder\n");
             }
             printf("Endereco do seeder enviado com sucesso!\n");
 
-            // envia informacoes do leecher para seeder
-            if (sendto(socks, &(cliente_baixar.addr), sizeof(cliente_baixar.addr), 0, (struct sockaddr *)&(cliente_semear.addr), sizeof(cliente_semear.addr)) < 0)
+            // Envia informacoes do leecher para seeder
+            if (sendto(socks, &(cliente_leecher.addr), sizeof(cliente_leecher.addr), 0, (struct sockaddr *)&(cliente_seeder.addr), sizeof(cliente_seeder.addr)) < 0)
             {
                 error("Erro ao enviar informações do leecher\n");
             }
