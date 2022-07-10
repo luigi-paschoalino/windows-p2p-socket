@@ -15,6 +15,7 @@ gcc servidor.c -o servidor -lws2_32
 To run properly, you need to open one instance of "servidor.exe" and two of "cliente.exe", in this exact order. The two instances of the latter will have different roles, one of them being the seeder (uploader) and the other one being the leecher (downloader).
 
 The command lines to execute both "servidor.exe" and "cliente.exe" are, respectively:
+
 Just executing the "servidor.exe" file once or
 ```
 servidor
