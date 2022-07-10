@@ -1,29 +1,32 @@
 # Windows P2P Socket
+This is a college project for the 2022.1 Computer Network class, where we needed to create a peer-to-peer file transfer UDP socket with reliable data transfer
 
-Grupo: 
-Caio Duque Gorgulho Araújo - 2020014150
-Juan Pablo Ribeiro - 2021001881
-Leonardo Henrique Pereira - 2020028156
-Luigi Paschoalino - 2020011865
+We have two separate folders, one containing the client and the other containing the server
 
-Os clientes e servidores foram desenvolvidos para serem utilizados dentro do Windows.
-Funcionamento apenas dentro da máquina. Não testado se funcional dentro da rede local.
+In order to compile both files using GCC, the following command lines must be used inside the cmd:
 
-Para compilar os arquivos .c, os seguintes comandos devem ser usados:
+```
+gcc cliente.c -o cliente -lws2_32
+```
+```
+gcc servidor.c -o servidor -lws2_32
+```
 
-	Cliente: gcc cliente.c -o cliente -lws2_32
-	Servidor: gcc servidor.c -o servidor -lws2_32
+To run properly, you need to open one instance of "servidor.exe" and two of "cliente.exe", in this exact order. The two instances of the latter will have different roles, one of them being the seeder (uploader) and the other one being the leecher (downloader).
 
-Para a execução correta dos arquivos, a ordem de abertura e os respectivos comandos no cmd devem ser:
+The command lines to execute both "servidor.exe" and "cliente.exe" are, respectively:
+Just executing the "servidor.exe" file once or
+```
+servidor
+```
 
-	Servidor: apenas executar o arquivo "servidor.exe" ou digitar "servidor" dentro do cmd
-	Clientes: "cliente 127.0.0.1 <opção>"
-		As opções são:
-			1 - seeder (cliente irá enviar um arquivo contido na mesma pasta)
-			2 - leecher (cleinte irá solicitar e receber um arquivo contido pelo cliente seeder)
+```
+cliente 127.0.0.1 <option>
+```
+The <option> field above needs to be replaced with the role number: 1 - Seeder; 2 - Leecher
 
-Ao término da execução dos clientes, o servidor irá efetuar a conexão direta entre os dois e irá encerrar seu funcionamento, pois presume que o arquivo a ser solicitado está em posse do seeder.
+If the server and clients are already opened, the leecher client will require you to write the file name and extension contained within the seeder file folder (the server just connects both clients, presuming the seeder client will have the leecher client required file).
 
-Durante a transferência, ambos clientes irão informar o número de sequência dos pacotes transferidos.
+After you type the file name and extension and press "Enter", the seeder client starts the file transfer, printing everytime a new package is sent. The leecher file will also print everytime a new package is received, printing its sequence number and checksum.
 
-Após o término da transferência, os clientes se encerrarão.
+The client instances will stop after the file transfer is completed (last package sequence number printed by the leecher is -1) and the new file will be contained withing the leecher folder, with the new name being "Copia de <file_name>.<extension>"
