@@ -28,6 +28,6 @@ The <option> field above needs to be replaced with the role number: 1 - Seeder; 
 
 If the server and clients are already opened, the leecher client will require you to write the file name and extension contained within the seeder file folder (the server just connects both clients, presuming the seeder client will have the leecher client required file).
 
-After you type the file name and extension and press "Enter", the seeder client starts the file transfer, printing everytime a new package is sent. The leecher file will also print everytime a new package is received, printing its sequence number and checksum.
+After you type the file name, its extension and press "Enter", the seeder client starts the file transfer, printing everytime a new package is sent. The leecher file will also print everytime a new package is received, printing its sequence number and checksum.
 
-The client instances will stop after the file transfer is completed (last package sequence number printed by the leecher is -1) and the new file will be contained withing the leecher folder, with the new name being "Copia de <file_name>.<extension>"
+The client instances will stop after the file transfer is completed (last package sequence number printed by the leecher is -1) and the new file will be contained within the leecher folder, with the new name being "Copia de <file_name>.<extension>"
